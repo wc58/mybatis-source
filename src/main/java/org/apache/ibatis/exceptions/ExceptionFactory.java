@@ -18,7 +18,7 @@ package org.apache.ibatis.exceptions;
 import org.apache.ibatis.executor.ErrorContext;
 
 /**
- * @author Clinton Begin
+ * 用于 SqlSessionFactory 的异常类
  */
 public class ExceptionFactory {
 

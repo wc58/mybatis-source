@@ -16,7 +16,8 @@
 package org.apache.ibatis.exceptions;
 
 /**
- * @author Clinton Begin
+ * 所有异常的超类，或间接使用该异常类
+ * 该类继承 IbatisException，间接继承 RuntimeException
  */
 @SuppressWarnings("deprecation")
 public class PersistenceException extends IbatisException {
