@@ -18,10 +18,15 @@ package org.apache.ibatis.datasource.pooled;
 import org.apache.ibatis.datasource.unpooled.UnpooledDataSourceFactory;
 
 /**
- * @author Clinton Begin
+ * 用于产生具有连接池功能的数据源
+ * 在创建Configuration类时，已经建该类注册到别名注册中心中
  */
 public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
 
+  /**
+   * 覆盖父类里的普通数据源
+   * 使用具有连接池功能的数据源
+   */
   public PooledDataSourceFactory() {
     this.dataSource = new PooledDataSource();
   }

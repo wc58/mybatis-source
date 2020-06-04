@@ -16,6 +16,16 @@ public class Main {
   public static void main(String[] args) throws IOException {
     InputStream resource = Resources.getResourceAsStream("mybatis.xml");
     SqlSessionFactory build = new SqlSessionFactoryBuilder().build(resource);
+
+
+    for (int i = 0; i < 10; i++) {
+      SqlSession session = build.openSession(true);
+      UserMapper userMapper = session.getMapper(UserMapper.class);
+      User user = userMapper.getUserById(5);
+      session.close();
+    }
+
+
     SqlSession session = build.openSession(true);
     UserMapper userMapper = session.getMapper(UserMapper.class);
     //增

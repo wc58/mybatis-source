@@ -24,7 +24,7 @@ import java.sql.SQLException;
 import org.apache.ibatis.reflection.ExceptionUtil;
 
 /**
- * @author Clinton Begin
+ * 一个普通连接的增强类
  */
 class PooledConnection implements InvocationHandler {
 
@@ -39,15 +39,13 @@ class PooledConnection implements InvocationHandler {
   private long createdTimestamp;
   private long lastUsedTimestamp;
   private int connectionTypeCode;
+  //有效？
   private boolean valid;
 
   /**
-   * Constructor for SimplePooledConnection that uses the Connection and PooledDataSource passed in.
-   *
+   * 设置实际连接和连接池
    * @param connection
-   *          - the connection that is to be presented as a pooled connection
    * @param dataSource
-   *          - the dataSource that the connection is from
    */
   public PooledConnection(Connection connection, PooledDataSource dataSource) {
     this.hashCode = connection.hashCode();
@@ -60,43 +58,39 @@ class PooledConnection implements InvocationHandler {
   }
 
   /**
-   * Invalidates the connection.
+   * 设置无效
    */
   public void invalidate() {
     valid = false;
   }
 
   /**
-   * Method to see if the connection is usable.
-   *
-   * @return True if the connection is usable
+   * 是否有效
+   * @return
    */
   public boolean isValid() {
     return valid && realConnection != null && dataSource.pingConnection(this);
   }
 
   /**
-   * Getter for the *real* connection that this wraps.
-   *
-   * @return The connection
+   * 获取真实连接
+   * @return
    */
   public Connection getRealConnection() {
     return realConnection;
   }
 
   /**
-   * Getter for the proxy for the connection.
-   *
-   * @return The proxy
+   * 获取代理连接
+   * @return
    */
   public Connection getProxyConnection() {
     return proxyConnection;
   }
 
   /**
-   * Gets the hashcode of the real connection (or 0 if it is null).
-   *
-   * @return The hashcode of the real connection (or 0 if it is null)
+   * 获取真实连接的哈希值
+   * @return
    */
   public int getRealHashCode() {
     return realConnection == null ? 0 : realConnection.hashCode();
@@ -229,15 +223,12 @@ class PooledConnection implements InvocationHandler {
   }
 
   /**
-   * Required for InvocationHandler implementation.
-   *
+   * 主要用于检查连接是否被关闭？放入空闲池：执行sql
    * @param proxy
-   *          - not used
    * @param method
-   *          - the method to be executed
    * @param args
-   *          - the parameters to be passed to the method
-   * @see java.lang.reflect.InvocationHandler#invoke(Object, java.lang.reflect.Method, Object[])
+   * @return
+   * @throws Throwable
    */
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -248,8 +239,6 @@ class PooledConnection implements InvocationHandler {
     }
     try {
       if (!Object.class.equals(method.getDeclaringClass())) {
-        // issue #579 toString() should never fail
-        // throw an SQLException instead of a Runtime
         checkConnection();
       }
       return method.invoke(realConnection, args);
@@ -259,6 +248,10 @@ class PooledConnection implements InvocationHandler {
 
   }
 
+  /**
+   * 检查连接是否有效
+   * @throws SQLException
+   */
   private void checkConnection() throws SQLException {
     if (!valid) {
       throw new SQLException("Error accessing PooledConnection. Connection is invalid.");
