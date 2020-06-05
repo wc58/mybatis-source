@@ -23,19 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The annotation that specify an SQL for updating record(s).
- *
- * <p>
- * <b>How to use:</b>
- *
- * <pre>
- * public interface UserMapper {
- *   &#064;Update("UPDATE users SET name = #{name} WHERE id = #{id}")
- *   boolean update(User user);
- * }
- * </pre>
- *
- * @author Clinton Begin
+ * 用于执行更新操作
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -43,22 +31,19 @@ import java.lang.annotation.Target;
 @Repeatable(Update.List.class)
 public @interface Update {
   /**
-   * Returns an SQL for updating record(s).
-   *
-   * @return an SQL for updating record(s)
+   * 存放要更新的sql
+   * @return
    */
   String[] value();
 
   /**
-   * @return A database id that correspond this statement
-   * @since 3.5.5
+   * 存放要更新的sql
+   * @return
    */
   String databaseId() default "";
 
   /**
-   * The container annotation for {@link Update}.
-   * @author Kazuki Shimizu
-   * @since 3.5.5
+   * 可重复的添加此注解
    */
   @Documented
   @Retention(RetentionPolicy.RUNTIME)

@@ -23,19 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The annotation that specify an SQL for inserting record(s).
- *
- * <p>
- * <b>How to use:</b>
- *
- * <pre>
- * public interface UserMapper {
- *   &#064;Insert("INSERT INTO users (id, name) VALUES(#{id}, #{name})")
- *   void insert(User user);
- * }
- * </pre>
- *
- * @author Clinton Begin
+ * 用于执行插入操作
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -43,22 +31,19 @@ import java.lang.annotation.Target;
 @Repeatable(Insert.List.class)
 public @interface Insert {
   /**
-   * Returns an SQL for inserting record(s).
-   *
-   * @return an SQL for inserting record(s)
+   * 存放要插入的sql
+   * @return
    */
   String[] value();
 
   /**
-   * @return A database id that correspond this statement
-   * @since 3.5.5
+   * 存放要插入的sql
+   * @return
    */
   String databaseId() default "";
 
   /**
-   * The container annotation for {@link Insert}.
-   * @author Kazuki Shimizu
-   * @since 3.5.5
+   * 可重复的添加此注解
    */
   @Documented
   @Retention(RetentionPolicy.RUNTIME)

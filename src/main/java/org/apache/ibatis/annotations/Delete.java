@@ -23,19 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The annotation that specify an SQL for deleting record(s).
- *
- * <p>
- * <b>How to use:</b>
- *
- * <pre>
- * public interface UserMapper {
- *   &#064;Delete("DELETE FROM users WHERE id = #{id}")
- *   boolean deleteById(int id);
- * }
- * </pre>
- *
- * @author Clinton Begin
+ * 用于执行删除操作
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -43,22 +31,19 @@ import java.lang.annotation.Target;
 @Repeatable(Delete.List.class)
 public @interface Delete {
   /**
-   * Returns an SQL for deleting record(s).
-   *
-   * @return an SQL for deleting record(s)
+   * 存放要删除的sql
+   * @return
    */
   String[] value();
 
   /**
-   * @return A database id that correspond this statement
-   * @since 3.5.5
+   * 存放要删除的sql
+   * @return
    */
   String databaseId() default "";
 
   /**
-   * The container annotation for {@link Delete}.
-   * @author Kazuki Shimizu
-   * @since 3.5.5
+   * 可重复的添加此注解
    */
   @Documented
   @Retention(RetentionPolicy.RUNTIME)
