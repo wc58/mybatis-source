@@ -29,40 +29,85 @@ import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
- * @author Clinton Begin
+ * 所有建造器的抽象类
  */
 public abstract class BaseBuilder {
+  //主配置类
   protected final Configuration configuration;
+  //别名注册器
   protected final TypeAliasRegistry typeAliasRegistry;
+  //类型注册器
   protected final TypeHandlerRegistry typeHandlerRegistry;
 
+  /**
+   * 传入主配置类
+   * 即可根据主配置类来取出，别名注册器、类型注册器
+   * @param configuration
+   */
   public BaseBuilder(Configuration configuration) {
     this.configuration = configuration;
     this.typeAliasRegistry = this.configuration.getTypeAliasRegistry();
     this.typeHandlerRegistry = this.configuration.getTypeHandlerRegistry();
   }
 
+  /**
+   * 获取主配置类
+   * @return
+   */
   public Configuration getConfiguration() {
     return configuration;
   }
 
+  /**
+   * 解析表达式
+   * @param regex
+   * @param defaultValue
+   * @return
+   */
   protected Pattern parseExpression(String regex, String defaultValue) {
     return Pattern.compile(regex == null ? defaultValue : regex);
   }
 
+  /**
+   * 字符串类型转为布尔类型
+   * 不为空转换，否使用默认
+   * @param value
+   * @param defaultValue
+   * @return
+   */
   protected Boolean booleanValueOf(String value, Boolean defaultValue) {
     return value == null ? defaultValue : Boolean.valueOf(value);
   }
 
+  /**
+   * 字符串类型转为整数类型
+   * 不为空转换，否使用默认
+   * @param value
+   * @param defaultValue
+   * @return
+   */
   protected Integer integerValueOf(String value, Integer defaultValue) {
     return value == null ? defaultValue : Integer.valueOf(value);
   }
 
+  /**
+   * 字符串类型转为字符串集合类型
+   * 不为空转换，否使用默认
+   * 使用“,”作为分隔符
+   * @param value
+   * @param defaultValue
+   * @return
+   */
   protected Set<String> stringSetValueOf(String value, String defaultValue) {
     value = value == null ? defaultValue : value;
     return new HashSet<>(Arrays.asList(value.split(",")));
   }
 
+  /**
+   * 将别名转为数据库类型
+   * @param alias
+   * @return
+   */
   protected JdbcType resolveJdbcType(String alias) {
     if (alias == null) {
       return null;
@@ -74,6 +119,11 @@ public abstract class BaseBuilder {
     }
   }
 
+  /**
+   * 将别名转化为结果集类型
+   * @param alias
+   * @return
+   */
   protected ResultSetType resolveResultSetType(String alias) {
     if (alias == null) {
       return null;
@@ -85,6 +135,11 @@ public abstract class BaseBuilder {
     }
   }
 
+  /**
+   * 将别名转化为参数模型
+   * @param alias
+   * @return
+   */
   protected ParameterMode resolveParameterMode(String alias) {
     if (alias == null) {
       return null;
@@ -96,6 +151,11 @@ public abstract class BaseBuilder {
     }
   }
 
+  /**
+   * 活动类型通过默认构造方法进行实例
+   * @param alias
+   * @return
+   */
   protected Object createInstance(String alias) {
     Class<?> clazz = resolveClass(alias);
     if (clazz == null) {
@@ -108,6 +168,12 @@ public abstract class BaseBuilder {
     }
   }
 
+  /**
+   * 解析别名对应类型
+   * @param alias
+   * @param <T>
+   * @return
+   */
   protected <T> Class<? extends T> resolveClass(String alias) {
     if (alias == null) {
       return null;
@@ -145,6 +211,13 @@ public abstract class BaseBuilder {
     return handler;
   }
 
+  /**
+   * 通过别名注册器
+   * 查找别名对应的类型
+   * @param alias
+   * @param <T>
+   * @return
+   */
   protected <T> Class<? extends T> resolveAlias(String alias) {
     return typeAliasRegistry.resolveAlias(alias);
   }

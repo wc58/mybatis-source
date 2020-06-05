@@ -28,7 +28,7 @@ import org.apache.ibatis.type.UnknownTypeHandler;
 
 /**
  * The annotation that specify a mapping definition for the constructor argument.
- *
+ *为构造函数参数指定映射定义的注释
  * @see ConstructorArgs
  * @author Clinton Begin
  */

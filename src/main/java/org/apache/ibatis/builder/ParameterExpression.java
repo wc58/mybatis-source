@@ -18,7 +18,7 @@ package org.apache.ibatis.builder;
 import java.util.HashMap;
 
 /**
- * Inline parameter expression parser. Supported grammar (simplified):
+ * 参数解析器
  *
  * <pre>
  * inline-parameter = (propertyName | expression) oldJdbcType attributes
@@ -35,10 +35,19 @@ public class ParameterExpression extends HashMap<String, String> {
 
   private static final long serialVersionUID = -2417552199605158680L;
 
+  /**
+   * 对传入参数进行解析
+   * @param expression
+   */
   public ParameterExpression(String expression) {
     parse(expression);
   }
 
+  /**
+   * 去除前面的空格
+   * 表达式？索引加一进行处理：直接处理
+   * @param expression
+   */
   private void parse(String expression) {
     int p = skipWS(expression, 0);
     if (expression.charAt(p) == '(') {
@@ -63,6 +72,13 @@ public class ParameterExpression extends HashMap<String, String> {
     jdbcTypeOpt(expression, right);
   }
 
+  /**
+   * 已有左索引，再查找右索引
+   * 为值去除前后索引
+   * 保存
+   * @param expression
+   * @param left
+   */
   private void property(String expression, int left) {
     if (left < expression.length()) {
       int right = skipUntil(expression, left, ",:");
@@ -71,6 +87,13 @@ public class ParameterExpression extends HashMap<String, String> {
     }
   }
 
+  /**
+   * 跳过空格
+   *  ASCII：0x20 = 32 = space = 空格
+   * @param expression
+   * @param p
+   * @return
+   */
   private int skipWS(String expression, int p) {
     for (int i = p; i < expression.length(); i++) {
       if (expression.charAt(i) > 0x20) {
@@ -80,6 +103,13 @@ public class ParameterExpression extends HashMap<String, String> {
     return expression.length();
   }
 
+  /**
+   * 返回指定字符的索引
+   * @param expression
+   * @param p
+   * @param endChars
+   * @return
+   */
   private int skipUntil(String expression, int p, final String endChars) {
     for (int i = p; i < expression.length(); i++) {
       char c = expression.charAt(i);
@@ -127,6 +157,13 @@ public class ParameterExpression extends HashMap<String, String> {
     }
   }
 
+  /**
+   * 去除前后空格
+   * @param str
+   * @param start
+   * @param end
+   * @return
+   */
   private String trimmedStr(String str, int start, int end) {
     while (str.charAt(start) <= 0x20) {
       start++;

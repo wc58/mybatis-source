@@ -16,7 +16,7 @@
 package org.apache.ibatis.builder;
 
 /**
- * @author Eduardo Macarron
+ * 建造器所使用的的异常类
  */
 public class IncompleteElementException extends BuilderException {
   private static final long serialVersionUID = -3697292286890900315L;

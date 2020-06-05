@@ -18,7 +18,7 @@ package org.apache.ibatis.builder;
 import org.apache.ibatis.exceptions.PersistenceException;
 
 /**
- * @author Clinton Begin
+ * 建造器所使用的的异常类
  */
 public class BuilderException extends PersistenceException {
 

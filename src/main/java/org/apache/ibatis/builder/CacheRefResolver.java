@@ -18,17 +18,31 @@ package org.apache.ibatis.builder;
 import org.apache.ibatis.cache.Cache;
 
 /**
- * @author Clinton Begin
+ * 缓存建造器
  */
 public class CacheRefResolver {
+  //mapper建造器的助理
   private final MapperBuilderAssistant assistant;
+  //缓存的命名空间
   private final String cacheRefNamespace;
 
+  /**
+   * 初始化
+   *  mapper建造器的助理
+   *   缓存的命名空间
+   * @param assistant
+   * @param cacheRefNamespace
+   */
   public CacheRefResolver(MapperBuilderAssistant assistant, String cacheRefNamespace) {
     this.assistant = assistant;
     this.cacheRefNamespace = cacheRefNamespace;
   }
 
+  /**
+   * 根据缓存的命名空间取出缓存
+   * 在缓存建造器创建时，缓存就已确定
+   * @return
+   */
   public Cache resolveCacheRef() {
     return assistant.useCacheRef(cacheRefNamespace);
   }

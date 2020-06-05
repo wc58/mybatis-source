@@ -23,7 +23,7 @@ import org.apache.ibatis.mapping.SqlSource;
 import org.apache.ibatis.session.Configuration;
 
 /**
- * @author Clinton Begin
+ * 静态sql资源
  */
 public class StaticSqlSource implements SqlSource {
 
