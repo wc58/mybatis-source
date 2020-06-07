@@ -48,8 +48,7 @@ import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.type.JdbcType;
 
 /**
- * @author Clinton Begin
- * @author Kazuki Shimizu
+ * 解析主配置文件
  */
 public class XMLConfigBuilder extends BaseBuilder {
 
