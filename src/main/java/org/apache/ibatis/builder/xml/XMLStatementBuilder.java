@@ -34,18 +34,28 @@ import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 
 /**
- * @author Clinton Begin
+ * 主要负责增删改查的标签
  */
 public class XMLStatementBuilder extends BaseBuilder {
 
+  //助理
   private final MapperBuilderAssistant builderAssistant;
+  //节点
   private final XNode context;
+  //数据库提供商
   private final String requiredDatabaseId;
 
   public XMLStatementBuilder(Configuration configuration, MapperBuilderAssistant builderAssistant, XNode context) {
     this(configuration, builderAssistant, context, null);
   }
 
+  /**
+   * 初始化属性
+   * @param configuration
+   * @param builderAssistant
+   * @param context
+   * @param databaseId
+   */
   public XMLStatementBuilder(Configuration configuration, MapperBuilderAssistant builderAssistant, XNode context, String databaseId) {
     super(configuration);
     this.builderAssistant = builderAssistant;
@@ -53,6 +63,22 @@ public class XMLStatementBuilder extends BaseBuilder {
     this.requiredDatabaseId = databaseId;
   }
 
+  /**
+   * 开始解析
+   *
+   *      取出id，判断数据库提供商
+   *      将名称转为枚举类
+   *      查询语句？刷新缓存？使用缓存？结果排序？
+   *      提前解析sql片段中的语句
+   *      取出参数类型并加载
+   *      获取语言驱动
+   *      ----
+   *
+   *      ----
+   *      解析出sql语句
+   *      获取一系列属性（取出总数、超时时间、参数映射、结果类型……）
+   *      传给助理，进行操作
+   */
   public void parseStatementNode() {
     String id = context.getStringAttribute("id");
     String databaseId = context.getStringAttribute("databaseId");
@@ -63,12 +89,12 @@ public class XMLStatementBuilder extends BaseBuilder {
 
     String nodeName = context.getNode().getNodeName();
     SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
+
     boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
     boolean flushCache = context.getBooleanAttribute("flushCache", !isSelect);
     boolean useCache = context.getBooleanAttribute("useCache", isSelect);
     boolean resultOrdered = context.getBooleanAttribute("resultOrdered", false);
 
-    // Include Fragments before parsing
     XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
     includeParser.applyIncludes(context.getNode());
 
@@ -78,10 +104,9 @@ public class XMLStatementBuilder extends BaseBuilder {
     String lang = context.getStringAttribute("lang");
     LanguageDriver langDriver = getLanguageDriver(lang);
 
-    // Parse selectKey after includes and remove them.
+   //-----
     processSelectKeyNodes(id, parameterTypeClass, langDriver);
 
-    // Parse the SQL (pre: <selectKey> and <include> were parsed and removed)
     KeyGenerator keyGenerator;
     String keyStatementId = id + SelectKeyGenerator.SELECT_KEY_SUFFIX;
     keyStatementId = builderAssistant.applyCurrentNamespace(keyStatementId, true);
@@ -92,9 +117,11 @@ public class XMLStatementBuilder extends BaseBuilder {
           configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType))
           ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
     }
+    //-----
 
     SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
     StatementType statementType = StatementType.valueOf(context.getStringAttribute("statementType", StatementType.PREPARED.toString()));
+
     Integer fetchSize = context.getIntAttribute("fetchSize");
     Integer timeout = context.getIntAttribute("timeout");
     String parameterMap = context.getStringAttribute("parameterMap");
@@ -174,6 +201,17 @@ public class XMLStatementBuilder extends BaseBuilder {
     }
   }
 
+  /**
+   * 语句中的数据库提供商和期望一致 true
+   * 没有期望的数据库提供商，但语句中存在 false
+   * id加上命名空间，若不在该语句 true
+   *
+   *
+   * @param id
+   * @param databaseId
+   * @param requiredDatabaseId
+   * @return
+   */
   private boolean databaseIdMatchesCurrent(String id, String databaseId, String requiredDatabaseId) {
     if (requiredDatabaseId != null) {
       return requiredDatabaseId.equals(databaseId);
@@ -185,11 +223,16 @@ public class XMLStatementBuilder extends BaseBuilder {
     if (!this.configuration.hasStatement(id, false)) {
       return true;
     }
-    // skip this statement if there is a previous one with a not null databaseId
     MappedStatement previous = this.configuration.getMappedStatement(id, false); // issue #2
     return previous.getDatabaseId() == null;
   }
 
+  /**
+   * 获取语言驱动
+   * 然并卵
+   * @param lang
+   * @return
+   */
   private LanguageDriver getLanguageDriver(String lang) {
     Class<? extends LanguageDriver> langClass = null;
     if (lang != null) {
