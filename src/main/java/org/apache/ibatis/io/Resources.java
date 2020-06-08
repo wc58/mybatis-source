@@ -26,47 +26,40 @@ import java.nio.charset.Charset;
 import java.util.Properties;
 
 /**
- * A class to simplify access to resources through the classloader.
- *
- * @author Clinton Begin
+ * 用于加载文件
  */
 public class Resources {
 
+  // 类加载器的集合
   private static ClassLoaderWrapper classLoaderWrapper = new ClassLoaderWrapper();
 
-  /**
-   * Charset to use when calling getResourceAsReader.
-   * null means use the system default.
-   */
+  //字符集
   private static Charset charset;
 
   Resources() {
   }
 
   /**
-   * Returns the default classloader (may be null).
-   *
-   * @return The default classloader
+   * 获取默认类加载器
+   * @return
    */
   public static ClassLoader getDefaultClassLoader() {
     return classLoaderWrapper.defaultClassLoader;
   }
 
   /**
-   * Sets the default classloader
-   *
-   * @param defaultClassLoader - the new default ClassLoader
+   * 设置默认类加载器
+   * @param defaultClassLoader
    */
   public static void setDefaultClassLoader(ClassLoader defaultClassLoader) {
     classLoaderWrapper.defaultClassLoader = defaultClassLoader;
   }
 
   /**
-   * Returns the URL of the resource on the classpath
-   *
-   * @param resource The resource to find
-   * @return The resource
-   * @throws java.io.IOException If the resource cannot be found or read
+   * 将类路径转换为url路径
+   * @param resource
+   * @return
+   * @throws IOException
    */
   public static URL getResourceURL(String resource) throws IOException {
     // issue #625
@@ -74,12 +67,11 @@ public class Resources {
   }
 
   /**
-   * Returns the URL of the resource on the classpath
-   *
-   * @param loader   The classloader used to fetch the resource
-   * @param resource The resource to find
-   * @return The resource
-   * @throws java.io.IOException If the resource cannot be found or read
+   * 设置一个类加载器，将类路径转换为url路径
+   * @param loader
+   * @param resource
+   * @return
+   * @throws IOException
    */
   public static URL getResourceURL(ClassLoader loader, String resource) throws IOException {
     URL url = classLoaderWrapper.getResourceAsURL(resource, loader);
@@ -90,7 +82,7 @@ public class Resources {
   }
 
   /**
-   * Returns a resource on the classpath as a Stream object
+   * 将类路径文件转换为一个输入流
    *
    * @param resource The resource to find
    * @return The resource
@@ -101,12 +93,11 @@ public class Resources {
   }
 
   /**
-   * Returns a resource on the classpath as a Stream object
+   * 使用指定类加载器，将类路径文件转换为一个输入流
    *
-   * @param loader   The classloader used to fetch the resource
-   * @param resource The resource to find
-   * @return The resource
-   * @throws java.io.IOException If the resource cannot be found or read
+   * @param loader
+   * @param resource
+   * @return
    */
   public static InputStream getResourceAsStream(ClassLoader loader, String resource) throws IOException {
     InputStream in = classLoaderWrapper.getResourceAsStream(resource, loader);
@@ -117,7 +108,7 @@ public class Resources {
   }
 
   /**
-   * Returns a resource on the classpath as a Properties object
+   * 将类路径文件转换为一个输入流，读取到Properties对象中
    *
    * @param resource The resource to find
    * @return The resource
@@ -132,7 +123,7 @@ public class Resources {
   }
 
   /**
-   * Returns a resource on the classpath as a Properties object
+   * 设置一个类加载器，将类路径文件转换为一个输入流，读取到Properties对象中
    *
    * @param loader   The classloader used to fetch the resource
    * @param resource The resource to find
@@ -148,7 +139,7 @@ public class Resources {
   }
 
   /**
-   * Returns a resource on the classpath as a Reader object
+   *  将类路径文件转换为一个输入流，再封装为InputStreamReader对象
    *
    * @param resource The resource to find
    * @return The resource
@@ -165,7 +156,7 @@ public class Resources {
   }
 
   /**
-   * Returns a resource on the classpath as a Reader object
+   * 设置一个类加载器，将类路径文件转换为一个输入流，再封装为InputStreamReader对象
    *
    * @param loader   The classloader used to fetch the resource
    * @param resource The resource to find
@@ -183,7 +174,7 @@ public class Resources {
   }
 
   /**
-   * Returns a resource on the classpath as a File object
+   *  将类路径转换为url路径，读取成file文件
    *
    * @param resource The resource to find
    * @return The resource
@@ -194,7 +185,7 @@ public class Resources {
   }
 
   /**
-   * Returns a resource on the classpath as a File object
+   * 设置一个类加载器，将类路径转换为url路径，读取成file文件
    *
    * @param loader   - the classloader used to fetch the resource
    * @param resource - the resource to find
@@ -206,7 +197,7 @@ public class Resources {
   }
 
   /**
-   * Gets a URL as an input stream
+   * 获取作为输入流的URL
    *
    * @param urlString - the URL to get
    * @return An input stream with the data from the URL
@@ -219,7 +210,7 @@ public class Resources {
   }
 
   /**
-   * Gets a URL as a Reader
+   * 获取作为读取器的URL
    *
    * @param urlString - the URL to get
    * @return A Reader with the data from the URL
@@ -236,11 +227,10 @@ public class Resources {
   }
 
   /**
-   * Gets a URL as a Properties object
-   *
-   * @param urlString - the URL to get
-   * @return A Properties object with the data from the URL
-   * @throws java.io.IOException If the resource cannot be found or read
+   * 加载Properties文件
+   * @param urlString
+   * @return
+   * @throws IOException
    */
   public static Properties getUrlAsProperties(String urlString) throws IOException {
     Properties props = new Properties();
@@ -251,20 +241,27 @@ public class Resources {
   }
 
   /**
-   * Loads a class
-   *
-   * @param className - the class to fetch
-   * @return The loaded class
-   * @throws ClassNotFoundException If the class cannot be found (duh!)
+   * 使用多种类加载器，将一个全类名方式加载
+   * @param className
+   * @return
+   * @throws ClassNotFoundException
    */
   public static Class<?> classForName(String className) throws ClassNotFoundException {
     return classLoaderWrapper.classForName(className);
   }
 
+  /**
+   * 获得字符集
+   * @return
+   */
   public static Charset getCharset() {
     return charset;
   }
 
+  /**
+   * 设置字符集
+   * @param charset
+   */
   public static void setCharset(Charset charset) {
     Resources.charset = charset;
   }
