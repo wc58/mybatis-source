@@ -28,17 +28,29 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * @author Clinton Begin
+ * 对普通的节点进一次封装
  */
 public class XNode {
 
+  //原始节点对象
   private final Node node;
+  //原始节点名称
   private final String name;
+  //正文
   private final String body;
+  //元素属性
   private final Properties attributes;
+  //属性
   private final Properties variables;
+  //该节点对应的解析器
   private final XPathParser xpathParser;
 
+  /**
+   * 初始化属性
+   * @param xpathParser
+   * @param node
+   * @param variables
+   */
   public XNode(XPathParser xpathParser, Node node, Properties variables) {
     this.xpathParser = xpathParser;
     this.node = node;
@@ -48,10 +60,21 @@ public class XNode {
     this.body = parseBody(node);
   }
 
+  /**
+   * 再创建和当前属性一致的x节点
+   * @param node
+   * @return
+   */
   public XNode newXNode(Node node) {
     return new XNode(xpathParser, node, variables);
   }
 
+  /**
+   * 获取父节点
+   *
+   *      通过原生获取父节点后，再封装返回
+   * @return
+   */
   public XNode getParent() {
     Node parent = node.getParentNode();
     if (!(parent instanceof Element)) {
@@ -61,6 +84,13 @@ public class XNode {
     }
   }
 
+  /**
+   * 获取当前对象的路径（父节点 + 本身）
+   *
+   *      循环获取该节点的所有父节点的名称
+   *      然后进行拼接返回
+   * @return
+   */
   public String getPath() {
     StringBuilder builder = new StringBuilder();
     Node current = node;
@@ -74,6 +104,13 @@ public class XNode {
     return builder.toString();
   }
 
+  /**
+   * 获取该节点的基本标识
+   *
+   *        将节点名称，对应的id，value，property值
+   *        进行拼接，形成了唯一的标识
+   * @return
+   */
   public String getValueBasedIdentifier() {
     StringBuilder builder = new StringBuilder();
     XNode current = this;
@@ -109,10 +146,20 @@ public class XNode {
     return xpathParser.evalDouble(node, expression);
   }
 
+  /**
+   * 在该节点的基础下寻找指定的节点集合
+   * @param expression
+   * @return
+   */
   public List<XNode> evalNodes(String expression) {
     return xpathParser.evalNodes(node, expression);
   }
 
+  /**
+   * 在该节点的基础下寻找指定的节点
+   * @param expression
+   * @return
+   */
   public XNode evalNode(String expression) {
     return xpathParser.evalNode(node, expression);
   }
@@ -228,10 +275,20 @@ public class XNode {
     return value == null ? defSupplier.get() : value;
   }
 
+  /**
+   * 获取指定属性的值
+   * @param name
+   * @return
+   */
   public String getStringAttribute(String name) {
     return getStringAttribute(name, (String) null);
   }
 
+  /**
+   * 获取指定属性的值 ，没有则默认值
+   * @param name
+   * @return
+   */
   public String getStringAttribute(String name, String def) {
     String value = attributes.getProperty(name);
     if (value == null) {
@@ -245,6 +302,12 @@ public class XNode {
     return getBooleanAttribute(name, null);
   }
 
+  /**
+   * 名称获取对应的布尔，没有则默认
+   * @param name
+   * @param def
+   * @return
+   */
   public Boolean getBooleanAttribute(String name, Boolean def) {
     String value = attributes.getProperty(name);
     if (value == null) {
@@ -379,6 +442,15 @@ public class XNode {
     }
   }
 
+  /**
+   * 解析属性
+   *
+   *        取出节点所有属性
+   *        对值进行
+   *        把属性名称和值对应到属性对象中返回
+   * @param n
+   * @return
+   */
   private Properties parseAttributes(Node n) {
     Properties attributes = new Properties();
     NamedNodeMap attributeNodes = n.getAttributes();
@@ -392,6 +464,14 @@ public class XNode {
     return attributes;
   }
 
+  /**
+   * 解析正文
+   *
+   *      解析后该节点后
+   *      如果为空，则再继续解析其子节点，直到解析出正文
+   * @param node
+   * @return
+   */
   private String parseBody(Node node) {
     String data = getBodyData(node);
     if (data == null) {
@@ -407,6 +487,16 @@ public class XNode {
     return data;
   }
 
+  /**
+   * 获取正文
+   *
+   *      但节点必须是CDATASection或text类型的
+   *      获取文本内容
+   *
+   *      最后返回
+   * @param child
+   * @return
+   */
   private String getBodyData(Node child) {
     if (child.getNodeType() == Node.CDATA_SECTION_NODE
         || child.getNodeType() == Node.TEXT_NODE) {
