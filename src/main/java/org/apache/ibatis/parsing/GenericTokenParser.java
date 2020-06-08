@@ -20,16 +20,31 @@ package org.apache.ibatis.parsing;
  */
 public class GenericTokenParser {
 
+  //开始符
   private final String openToken;
+  //结束符
   private final String closeToken;
+  //处理器
   private final TokenHandler handler;
 
+  /**
+   * 初始化一系列默认值
+   * @param openToken
+   * @param closeToken
+   * @param handler
+   */
   public GenericTokenParser(String openToken, String closeToken, TokenHandler handler) {
     this.openToken = openToken;
     this.closeToken = closeToken;
     this.handler = handler;
   }
 
+  /**
+   * 解析指定文本中的所有占位符
+   *
+   * @param text
+   * @return
+   */
   public String parse(String text) {
     if (text == null || text.isEmpty()) {
       return "";
@@ -44,42 +59,52 @@ public class GenericTokenParser {
     final StringBuilder builder = new StringBuilder();
     StringBuilder expression = null;
     while (start > -1) {
+      //是否有反斜杠，则当做普通字符串
       if (start > 0 && src[start - 1] == '\\') {
-        // this open token is escaped. remove the backslash and continue.
         builder.append(src, offset, start - offset - 1).append(openToken);
         offset = start + openToken.length();
       } else {
-        // found open token. let's search close token.
         if (expression == null) {
           expression = new StringBuilder();
         } else {
           expression.setLength(0);
         }
+        //第一次空
         builder.append(src, offset, start - offset);
+        //偏移到开始符后面
         offset = start + openToken.length();
+        //从指定索开始引查找指定值
         int end = text.indexOf(closeToken, offset);
         while (end > -1) {
+          //是否有反斜杠，则当做普通字符串
           if (end > offset && src[end - 1] == '\\') {
-            // this close token is escaped. remove the backslash and continue.
             expression.append(src, offset, end - offset - 1).append(closeToken);
             offset = end + closeToken.length();
             end = text.indexOf(closeToken, offset);
           } else {
+            //取出表达式中内容
             expression.append(src, offset, end - offset);
             break;
           }
         }
+        //是否有完整的占位符
         if (end == -1) {
-          // close token was not found.
+          //否则把后面当做普通字符串
           builder.append(src, start, src.length - start);
           offset = src.length;
         } else {
+          /*
+          从之前的属性对象中查找该key对应的value
+           */
           builder.append(handler.handleToken(expression.toString()));
+          //表示第一个站位符已经解析完毕
           offset = end + closeToken.length();
         }
       }
+      //尝试解析当前字符串中的第二个占位符
       start = text.indexOf(openToken, offset);
     }
+    //检查占位符后面是否还有字符串，有则拼接
     if (offset < src.length) {
       builder.append(src, offset, src.length - offset);
     }
