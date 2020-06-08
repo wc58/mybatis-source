@@ -27,17 +27,24 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 
 /**
- * @author Clinton Begin
+ * 外部资源
  */
 @Deprecated
 public class ExternalResources {
 
+  //日志
   private static final Log log = LogFactory.getLog(ExternalResources.class);
 
   private ExternalResources() {
     // do nothing
   }
 
+  /**
+   * 复制文件内容
+   * @param sourceFile
+   * @param destFile
+   * @throws IOException
+   */
   public static void copyExternalResource(File sourceFile, File destFile) throws IOException {
     if (!destFile.exists()) {
       destFile.createNewFile();
