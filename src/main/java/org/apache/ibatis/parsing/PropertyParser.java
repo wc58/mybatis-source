@@ -18,8 +18,7 @@ package org.apache.ibatis.parsing;
 import java.util.Properties;
 
 /**
- * @author Clinton Begin
- * @author Kazuki Shimizu
+ * 从properties查找指定值
  */
 public class PropertyParser {
 
@@ -46,10 +45,18 @@ public class PropertyParser {
   private static final String ENABLE_DEFAULT_VALUE = "false";
   private static final String DEFAULT_VALUE_SEPARATOR = ":";
 
+  /**
+   * 防止实例化
+   */
   private PropertyParser() {
-    // Prevent Instantiation
   }
 
+  /**
+   * 解析站位符，从指定属性对象中获取
+   * @param string
+   * @param variables
+   * @return
+   */
   public static String parse(String string, Properties variables) {
     VariableTokenHandler handler = new VariableTokenHandler(variables);
     GenericTokenParser parser = new GenericTokenParser("${", "}", handler);
@@ -57,24 +64,42 @@ public class PropertyParser {
   }
 
   private static class VariableTokenHandler implements TokenHandler {
+    //属性
     private final Properties variables;
+    //开启默认值？
     private final boolean enableDefaultValue;
     private final String defaultValueSeparator;
 
+    /**
+     * 初始化一系列属性
+     * @param variables
+     */
     private VariableTokenHandler(Properties variables) {
       this.variables = variables;
       this.enableDefaultValue = Boolean.parseBoolean(getPropertyValue(KEY_ENABLE_DEFAULT_VALUE, ENABLE_DEFAULT_VALUE));
       this.defaultValueSeparator = getPropertyValue(KEY_DEFAULT_VALUE_SEPARATOR, DEFAULT_VALUE_SEPARATOR);
     }
 
+    /**
+     * 获取指定值，否默认值
+     * @param key
+     * @param defaultValue
+     * @return
+     */
     private String getPropertyValue(String key, String defaultValue) {
       return (variables == null) ? defaultValue : variables.getProperty(key, defaultValue);
     }
 
+    /**
+     * 从指定属性对象中取出指定值
+     * @param content
+     * @return
+     */
     @Override
     public String handleToken(String content) {
       if (variables != null) {
         String key = content;
+        //一般不走
         if (enableDefaultValue) {
           final int separatorIndex = content.indexOf(defaultValueSeparator);
           String defaultValue = null;
@@ -90,6 +115,7 @@ public class PropertyParser {
           return variables.getProperty(key);
         }
       }
+      //找不到对应属性
       return "${" + content + "}";
     }
   }
