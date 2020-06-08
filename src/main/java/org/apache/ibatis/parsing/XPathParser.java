@@ -41,8 +41,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 /**
- * @author Clinton Begin
- * @author Kazuki Shimizu
+ * 仅仅负责，把解析出指定类型的指定值
  */
 public class XPathParser {
 
