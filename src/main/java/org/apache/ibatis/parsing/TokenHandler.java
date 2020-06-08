@@ -16,7 +16,7 @@
 package org.apache.ibatis.parsing;
 
 /**
- * @author Clinton Begin
+ * 用于取出${}、#{}所对应的值
  */
 public interface TokenHandler {
   String handleToken(String content);
