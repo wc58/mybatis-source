@@ -25,83 +25,52 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 
 /**
- * <p>ResolverUtil is used to locate classes that are available in the/a class path and meet
- * arbitrary conditions. The two most common conditions are that a class implements/extends
- * another class, or that is it annotated with a specific annotation. However, through the use
- * of the {@link Test} class it is possible to search using arbitrary conditions.</p>
- *
- * <p>A ClassLoader is used to locate all locations (directories and jar files) in the class
- * path that contain classes within certain packages, and then to load those classes and
- * check them. By default the ClassLoader returned by
- * {@code Thread.currentThread().getContextClassLoader()} is used, but this can be overridden
- * by calling {@link #setClassLoader(ClassLoader)} prior to invoking any of the {@code find()}
- * methods.</p>
- *
- * <p>General searches are initiated by calling the
- * {@link #find(org.apache.ibatis.io.ResolverUtil.Test, String)} ()} method and supplying
- * a package name and a Test instance. This will cause the named package <b>and all sub-packages</b>
- * to be scanned for classes that meet the test. There are also utility methods for the common
- * use cases of scanning multiple packages for extensions of particular classes, or classes
- * annotated with a specific annotation.</p>
- *
- * <p>The standard usage pattern for the ResolverUtil class is as follows:</p>
- *
- * <pre>
- * ResolverUtil&lt;ActionBean&gt; resolver = new ResolverUtil&lt;ActionBean&gt;();
- * resolver.findImplementation(ActionBean.class, pkg1, pkg2);
- * resolver.find(new CustomTest(), pkg1);
- * resolver.find(new CustomTest(), pkg2);
- * Collection&lt;ActionBean&gt; beans = resolver.getClasses();
- * </pre>
- *
- * @author Tim Fennell
+ * 加载包下的指定类
  * @param <T>
- *          the generic type
  */
 public class ResolverUtil<T> {
 
   /**
-   * An instance of Log to use for logging in this class.
+   * 日志记录
    */
   private static final Log log = LogFactory.getLog(ResolverUtil.class);
 
   /**
-   * A simple interface that specifies how to test classes to determine if they
-   * are to be included in the results produced by the ResolverUtil.
+   * 根据条件来匹配
    */
   public interface Test {
 
     /**
-     * Will be called repeatedly with candidate classes. Must return True if a class
-     * is to be included in the results, false otherwise.
-     *
+     * 指定匹配的条件
      * @param type
-     *          the type
-     * @return true, if successful
+     * @return
      */
     boolean matches(Class<?> type);
   }
 
   /**
-   * A Test that checks to see if each class is assignable to the provided class. Note
-   * that this test will match the parent type itself if it is presented for matching.
+   * 根据类型进行匹配
    */
   public static class IsA implements Test {
 
-    /** The parent. */
+    /**
+     * 匹配的类型
+     */
     private Class<?> parent;
 
     /**
-     * Constructs an IsA test using the supplied Class as the parent class/interface.
-     *
+     * 创建该对象时，就确定了类型
      * @param parentType
-     *          the parent type
      */
     public IsA(Class<?> parentType) {
       this.parent = parentType;
     }
 
-    /** Returns true if type is assignable to the parent type supplied in the constructor. */
+    /**
+     * 判断扫描出的类是否和匹配的类型一致
+     * @param type
+     * @return
+     */
     @Override
     public boolean matches(Class<?> type) {
       return type != null && parent.isAssignableFrom(type);
@@ -114,25 +83,28 @@ public class ResolverUtil<T> {
   }
 
   /**
-   * A Test that checks to see if each class is annotated with a specific annotation. If it
-   * is, then the test returns true, otherwise false.
+   * 根据注解匹配
    */
   public static class AnnotatedWith implements Test {
 
-    /** The annotation. */
+    /**
+     * 匹配的注解
+     */
     private Class<? extends Annotation> annotation;
 
     /**
-     * Constructs an AnnotatedWith test for the specified annotation type.
-     *
+     * 创建该对象时，就确定了注解
      * @param annotation
-     *          the annotation
      */
     public AnnotatedWith(Class<? extends Annotation> annotation) {
       this.annotation = annotation;
     }
 
-    /** Returns true if the type is annotated with the class provided to the constructor. */
+    /**
+     * 判断扫描出的类是否了加指定注解
+     * @param type
+     * @return
+     */
     @Override
     public boolean matches(Class<?> type) {
       return type != null && type.isAnnotationPresent(annotation);
@@ -144,56 +116,46 @@ public class ResolverUtil<T> {
     }
   }
 
-  /** The set of matches being accumulated. */
+  /**
+   * 存放已经扫描出来的类
+   */
   private Set<Class<? extends T>> matches = new HashSet<>();
 
   /**
-   * The ClassLoader to use when looking for classes. If null then the ClassLoader returned
-   * by Thread.currentThread().getContextClassLoader() will be used.
+   * 所使用的类加载器
    */
   private ClassLoader classloader;
 
   /**
-   * Provides access to the classes discovered so far. If no calls have been made to
-   * any of the {@code find()} methods, this set will be empty.
-   *
-   * @return the set of classes that have been discovered.
+   * 返回已经扫描出来的类
+   * @return
    */
   public Set<Class<? extends T>> getClasses() {
     return matches;
   }
 
   /**
-   * Returns the classloader that will be used for scanning for classes. If no explicit
-   * ClassLoader has been set by the calling, the context class loader will be used.
-   *
-   * @return the ClassLoader that will be used to scan for classes
+   * 返回类加载器
+   *  没有则使用当前线程中的类加载器
+   * @return
    */
   public ClassLoader getClassLoader() {
     return classloader == null ? Thread.currentThread().getContextClassLoader() : classloader;
   }
 
   /**
-   * Sets an explicit ClassLoader that should be used when scanning for classes. If none
-   * is set then the context classloader will be used.
-   *
-   * @param classloader a ClassLoader to use when scanning for classes
+   * 指定类加载器
+   * @param classloader
    */
   public void setClassLoader(ClassLoader classloader) {
     this.classloader = classloader;
   }
 
   /**
-   * Attempts to discover classes that are assignable to the type provided. In the case
-   * that an interface is provided this method will collect implementations. In the case
-   * of a non-interface class, subclasses will be collected.  Accumulated classes can be
-   * accessed by calling {@link #getClasses()}.
-   *
+   * 扫描包下的指定类型的类
    * @param parent
-   *          the class of interface to find subclasses or implementations of
    * @param packageNames
-   *          one or more package names to scan (including subpackages) for classes
-   * @return the resolver util
+   * @return
    */
   public ResolverUtil<T> findImplementations(Class<?> parent, String... packageNames) {
     if (packageNames == null) {
@@ -209,14 +171,10 @@ public class ResolverUtil<T> {
   }
 
   /**
-   * Attempts to discover classes that are annotated with the annotation. Accumulated
-   * classes can be accessed by calling {@link #getClasses()}.
-   *
+   * 扫描包下加指定注解的类
    * @param annotation
-   *          the annotation that should be present on matching classes
    * @param packageNames
-   *          one or more package names to scan (including subpackages) for classes
-   * @return the resolver util
+   * @return
    */
   public ResolverUtil<T> findAnnotated(Class<? extends Annotation> annotation, String... packageNames) {
     if (packageNames == null) {
@@ -232,16 +190,11 @@ public class ResolverUtil<T> {
   }
 
   /**
-   * Scans for classes starting at the package provided and descending into subpackages.
-   * Each class is offered up to the Test as it is discovered, and if the Test returns
-   * true the class is retained.  Accumulated classes can be fetched by calling
-   * {@link #getClasses()}.
-   *
+   * 获取包路径下的所有类的路径
+   * 进行匹配保存
    * @param test
-   *          an instance of {@link Test} that will be used to filter classes
    * @param packageName
-   *          the name of the package from which to start scanning for classes, e.g. {@code net.sourceforge.stripes}
-   * @return the resolver util
+   * @return
    */
   public ResolverUtil<T> find(Test test, String packageName) {
     String path = getPackagePath(packageName);
@@ -261,23 +214,21 @@ public class ResolverUtil<T> {
   }
 
   /**
-   * Converts a Java package name to a path that can be looked up with a call to
-   * {@link ClassLoader#getResources(String)}.
-   *
+   * 包名转为包路径
    * @param packageName
-   *          The Java package name to convert to a path
-   * @return the package path
+   * @return
    */
   protected String getPackagePath(String packageName) {
     return packageName == null ? null : packageName.replace('.', '/');
   }
 
   /**
-   * Add the class designated by the fully qualified class name provided to the set of
-   * resolved classes if and only if it is approved by the Test supplied.
-   *
-   * @param test the test used to determine if the class matches
-   * @param fqn the fully qualified name of a class
+   * 去掉后缀名，将类路径转换为全类名
+   * 通过类加载器方式加载类
+   * 判断是否指定类型的
+   * 最后放入到容器中
+   * @param test
+   * @param fqn
    */
   @SuppressWarnings("unchecked")
   protected void addIfMatching(Test test, String fqn) {
