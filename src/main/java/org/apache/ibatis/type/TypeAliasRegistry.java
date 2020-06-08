@@ -33,12 +33,18 @@ import org.apache.ibatis.io.ResolverUtil;
 import org.apache.ibatis.io.Resources;
 
 /**
- * @author Clinton Begin
+ * 别名注册中心
+ *
+ *      主要负责存放 别名---类型
  */
 public class TypeAliasRegistry {
 
+  //存放别名与类型的映射
   private final Map<String, Class<?>> typeAliases = new HashMap<>();
 
+  /**
+   * 一创建，则注册一些常用的别名
+   */
   public TypeAliasRegistry() {
     registerAlias("string", String.class);
 
@@ -100,14 +106,20 @@ public class TypeAliasRegistry {
     registerAlias("ResultSet", ResultSet.class);
   }
 
+  /**
+   * 将全类名反射加载
+   *    先尝试从容器中拿
+   *    没有则反射加载
+   * @param string
+   * @param <T>
+   * @return
+   */
   @SuppressWarnings("unchecked")
-  // throws class cast exception as well if types cannot be assigned
   public <T> Class<T> resolveAlias(String string) {
     try {
       if (string == null) {
         return null;
       }
-      // issue #748
       String key = string.toLowerCase(Locale.ENGLISH);
       Class<T> value;
       if (typeAliases.containsKey(key)) {
@@ -121,23 +133,37 @@ public class TypeAliasRegistry {
     }
   }
 
+  /**
+   * 注册包下指定类型的类
+   * @param packageName
+   */
   public void registerAliases(String packageName) {
     registerAliases(packageName, Object.class);
   }
 
+  /**
+   * 扫描出包下指定的所有类型的类
+   *    排除枚举、接口
+   * @param packageName
+   * @param superType
+   */
   public void registerAliases(String packageName, Class<?> superType) {
     ResolverUtil<Class<?>> resolverUtil = new ResolverUtil<>();
     resolverUtil.find(new ResolverUtil.IsA(superType), packageName);
     Set<Class<? extends Class<?>>> typeSet = resolverUtil.getClasses();
     for (Class<?> type : typeSet) {
-      // Ignore inner classes and interfaces (including package-info.java)
-      // Skip also inner classes. See issue #6
       if (!type.isAnonymousClass() && !type.isInterface() && !type.isMemberClass()) {
         registerAlias(type);
       }
     }
   }
 
+  /**
+   * 若反射对象的注解未指定别名
+   * 则默认使用类名
+   * 然后保存
+   * @param type
+   */
   public void registerAlias(Class<?> type) {
     String alias = type.getSimpleName();
     Alias aliasAnnotation = type.getAnnotation(Alias.class);
@@ -147,11 +173,16 @@ public class TypeAliasRegistry {
     registerAlias(alias, type);
   }
 
+  /**
+   * 把指定别名和类型放入容器中
+   *  在放入之前会把别名进行小写转换
+   * @param alias
+   * @param value
+   */
   public void registerAlias(String alias, Class<?> value) {
     if (alias == null) {
       throw new TypeException("The parameter alias cannot be null");
     }
-    // issue #748
     String key = alias.toLowerCase(Locale.ENGLISH);
     if (typeAliases.containsKey(key) && typeAliases.get(key) != null && !typeAliases.get(key).equals(value)) {
       throw new TypeException("The alias '" + alias + "' is already mapped to the value '" + typeAliases.get(key).getName() + "'.");
@@ -159,6 +190,12 @@ public class TypeAliasRegistry {
     typeAliases.put(key, value);
   }
 
+  /**
+   * 将全类名反射加载到内存中
+   *  然后保存
+   * @param alias
+   * @param value
+   */
   public void registerAlias(String alias, String value) {
     try {
       registerAlias(alias, Resources.classForName(value));
@@ -168,10 +205,8 @@ public class TypeAliasRegistry {
   }
 
   /**
-   * Gets the type aliases.
-   *
-   * @return the type aliases
-   * @since 3.2.2
+   * 获取存放别名的map容器
+   * @return
    */
   public Map<String, Class<?>> getTypeAliases() {
     return Collections.unmodifiableMap(typeAliases);
