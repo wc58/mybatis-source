@@ -63,6 +63,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 字符输入流
+     *
      * @param reader
      */
     public XMLConfigBuilder(Reader reader) {
@@ -71,6 +72,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 字符输入流 + 指定环境
+     *
      * @param reader
      * @param environment
      */
@@ -80,6 +82,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 字符输入流 + 指定环境 + 属性配置
+     *
      * @param reader
      * @param environment
      * @param props
@@ -90,6 +93,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 字节输入流
+     *
      * @param inputStream
      */
     public XMLConfigBuilder(InputStream inputStream) {
@@ -98,6 +102,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 字节输入流 + 指定环境
+     *
      * @param inputStream
      * @param environment
      */
@@ -107,6 +112,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 字节输入流 + 指定环境 + 属性配置
+     *
      * @param inputStream
      * @param environment
      * @param props
@@ -117,11 +123,12 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 核心构造方法
-     *    先调用父类构造方法（初始化构造方法、别名注册中心、类型注册中心）
-     *    为配置设置指定属性
-     *    设置指定环境
-     *    设置指定xml解析器
-     *    设置一个标志位为false表示还为解析过
+     * 先调用父类构造方法（初始化构造方法、别名注册中心、类型注册中心）
+     * 为配置设置指定属性
+     * 指定环境
+     * 指定xml解析器
+     * 设置一个标志位为false表示还为解析过
+     *
      * @param parser
      * @param environment
      * @param props
@@ -137,9 +144,10 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 返回解析好的配置类
-     *      期间判断是否被解析过
-     *      然后开始解析配置类
-     *      最后返回解析好的配置类
+     * 期间判断是否被解析过
+     * 然后开始解析配置类
+     * 最后返回解析好的配置类
+     *
      * @return
      */
     public Configuration parse() {
@@ -154,6 +162,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     /**
      * 根据解析好的根节点
      * 开始解析mybatis主配置文件中的所有子节点
+     *
      * @param root 解析好的根节点<configuration></configuration>
      */
     private void parseConfiguration(XNode root) {
@@ -164,11 +173,11 @@ public class XMLConfigBuilder extends BaseBuilder {
             loadCustomLogImpl(settings);
             typeAliasesElement(root.evalNode("typeAliases"));
             pluginElement(root.evalNode("plugins"));
-            objectFactoryElement(root.evalNode("objectFactory"));
             objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
             reflectorFactoryElement(root.evalNode("reflectorFactory"));
             settingsElement(settings);
             environmentsElement(root.evalNode("environments"));
+            objectFactoryElement(root.evalNode("objectFactory"));
             databaseIdProviderElement(root.evalNode("databaseIdProvider"));
             typeHandlerElement(root.evalNode("typeHandlers"));
             mapperElement(root.evalNode("mappers"));
@@ -180,8 +189,9 @@ public class XMLConfigBuilder extends BaseBuilder {
     /**
      * 将<settings>节点配置到配置类中
      * 存在settings节点
-     *      ？获取子节点setting返回一个属性对象，判断是否是正确的setting，否抛异常
-     *      ：直接返回一个空属性对象
+     * ？获取子节点setting返回一个属性对象，判断是否是正确的setting，否抛异常
+     * ：直接返回一个空属性对象
+     *
      * @param context 解析好的节点<settings></settings>
      * @return
      */
@@ -203,11 +213,12 @@ public class XMLConfigBuilder extends BaseBuilder {
     /**
      * 使用指定VFS
      * VFS：读取文件
-     *      从settings的properties中读取对应的vfs
-     *      是否存在
-     *          ？对获取的值进行“,”分割（可以设置多个？）
-     *             反射创建对象，设置到配置类中
-     *          ：无操作
+     * 从settings的properties中读取对应的vfs
+     * 是否存在
+     * ？对获取的值进行“,”分割（可以设置多个？）
+     * 反射创建对象，设置到配置类中
+     * ：无操作
+     *
      * @param props <settings>对应的properties
      * @throws ClassNotFoundException
      */
@@ -227,8 +238,9 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 使用指定log日志
-     *       从settings的properties中读取对应的log
-     *       设置到配置类中
+     * 从settings的properties中读取对应的log
+     * 设置到配置类中
+     *
      * @param props <settings>对应的properties
      */
     private void loadCustomLogImpl(Properties props) {
@@ -240,9 +252,10 @@ public class XMLConfigBuilder extends BaseBuilder {
     /**
      * 将<typeAliases>节点配置到配置类中
      * 判断是否是包扫描
-     *      ？将包名传入别名注册中心，注册中心内部完成创建和注册
-     *      ：获取别名和全类名，反射创建对象，无别名，默认类名首字母小写
-     *        最终注册到别名注册中心中
+     * ？将包名传入别名注册中心，注册中心内部完成创建和注册
+     * ：获取别名和全类名，反射创建对象，无别名，默认类名首字母小写
+     * 最终注册到别名注册中心中
+     *
      * @param parent 解析好的节点<typeAliases></typeAliases>
      */
     private void typeAliasesElement(XNode parent) {
@@ -271,12 +284,13 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 将<plugins>节点配置到配置类中
+     * <p>
+     * 获取所有子节点的全类名（别名）以及属性
+     * 反射创建拦截器，然后设置属性
+     * 最终放入配置类中
+     * ！！！仅仅放入配置类中还未进行调用
      *
-     *      获取所有子节点的全类名（别名）以及属性
-     *      反射创建拦截器，然后设置属性
-     *      最终放入配置类中
-     *      ！！！仅仅放入配置类中还未进行调用
-     * @param parent  解析好的节点<plugins><plugins/>
+     * @param parent 解析好的节点<plugins><plugins/>
      * @throws Exception
      */
     private void pluginElement(XNode parent) throws Exception {
@@ -293,9 +307,10 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 将<objectFactory>节点配置到配置类中
+     * <p>
+     * 获取全类名（别名）及其属性，反射创建，设置属性，放入配置类中
+     * ！！！仅仅放入配置类中还未进行调用
      *
-     *      获取全类名（别名）及其属性，反射创建，设置属性，放入配置类中
-     *      ！！！仅仅放入配置类中还未进行调用
      * @param context 解析好的节点<objectFactory><objectFactory/>
      * @throws Exception
      */
@@ -311,9 +326,10 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 将<objectWrapperFactory>节点配置到配置类中
+     * <p>
+     * 获取全类名（别名），反射创建，放入配置类中
+     * ！！！仅仅放入配置类中还未进行调用
      *
-     *      获取全类名（别名），反射创建，放入配置类中
-     *      ！！！仅仅放入配置类中还未进行调用
      * @param context 解析好的节点<objectWrapperFactory><objectWrapperFactory/>
      * @throws Exception
      */
@@ -327,9 +343,10 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 将<reflectorFactory>节点配置到配置类中
+     * <p>
+     * 获取全类名（别名），反射创建，放入配置类中
+     * ！！！仅仅放入配置类中还未进行调用
      *
-     *      获取全类名（别名），反射创建，放入配置类中
-     *      ！！！仅仅放入配置类中还未进行调用
      * @param context 解析好的节点<reflectorFactory><reflectorFactory/>
      * @throws Exception
      */
@@ -343,10 +360,11 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 将<properties>节点配置到配置类中
+     * <p>
+     * 首先获取主配置中的 properties，然后再获取外部属性文件（resource、url只能任选其一）
+     * （主配置文件中 ——》外部属性文件——》配置类已存在的）合并，若key重复后者覆盖前者
+     * 最后设置到解析器中和主配置类中
      *
-     *      首先获取主配置中的 properties，然后再获取外部属性文件（resource、url只能任选其一）
-     *      （主配置文件中 ——》外部属性文件——》配置类已存在的）合并，若key重复后者覆盖前者
-     *      最后设置到解析器中和主配置类中
      * @param context 解析好的节点<properties><properties/>
      * @throws Exception
      */
@@ -374,6 +392,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 从属性对象根据指定key取值value，取出？给配置类设置value：默认值
+     *
      * @param props <settings>对应的properties
      */
     private void settingsElement(Properties props) {
@@ -408,11 +427,12 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 将<environments>节点配置到配置类中
+     * <p>
+     * 首先获取出指定的环境
+     * 根据指定的环境，遍历所有的环境，最后取出里面的配置
+     * 根据配置创建事务工厂，数据源工厂，数据源
+     * 最后创建出一个环境配置类，放入主配置类中
      *
-     *      首先获取出指定的环境
-     *      根据指定的环境，遍历所有的环境，最后取出里面的配置
-     *      根据配置创建事务工厂，数据源工厂，数据源
-     *      最后创建出一个环境配置类，放入主配置类中
      * @param context 解析好的节点<environments><environments/>
      * @throws Exception
      */
@@ -438,8 +458,9 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 将<databaseIdProvider>节点配置到配置类中
+     * <p>
+     * 获取全类名（别名）及其属性，反射创建，设置属性，放入配置类中
      *
-     *    获取全类名（别名）及其属性，反射创建，设置属性，放入配置类中
      * @param context 解析好的节点<databaseIdProvider><databaseIdProvider/>
      * @throws Exception
      */
@@ -464,8 +485,9 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 将<transactionManager>节点配置到配置类中
+     * <p>
+     * 获取全类名（别名）及其属性，反射创建，设置属性，放入配置类中
      *
-     *    获取全类名（别名）及其属性，反射创建，设置属性，放入配置类中
      * @param context 解析好的节点<transactionManager><transactionManager/>
      * @throws Exception
      */
@@ -482,8 +504,9 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 将<dataSource>节点配置到配置类中
+     * <p>
+     * 获取全类名（别名）及其属性，反射创建，设置属性，放入配置类中
      *
-     *    获取全类名（别名）及其属性，反射创建，设置属性，放入配置类中
      * @param context 解析好的节点<dataSource><dataSource/>
      * @throws Exception
      */
@@ -501,9 +524,10 @@ public class XMLConfigBuilder extends BaseBuilder {
     /**
      * 将<typeHandlers>节点配置到配置类中
      * 判断是否是包扫描
-     *      ？将包名传入类型注册中心，类型中心内部完成创建和注册
-     *      ：获取java类型、jdbc类型、，反射创建对象
-     *        最终注册到别名注册中心中
+     * ？将包名传入类型注册中心，类型中心内部完成创建和注册
+     * ：获取java类型、jdbc类型、，反射创建对象
+     * 最终注册到别名注册中心中
+     *
      * @param parent 解析好的节点<typeHandlers></typeHandlers>
      */
     private void typeHandlerElement(XNode parent) {
@@ -536,9 +560,10 @@ public class XMLConfigBuilder extends BaseBuilder {
     /**
      * 将<mappers>节点配置到配置类中
      * 判断是否是包扫描
-     *      ？将包名传入mapper注册中心，mapper中心内部进行扫描、反射、注册操作
-     *      ：如果是class类型，直接放入mapper注册中心中
-     *        如果是resource、url类型，先解析mapper.xml，然后根据命名空间创建对象，放入mapper注册中心中
+     * ？将包名传入mapper注册中心，mapper中心内部进行扫描、反射、注册操作
+     * ：如果是class类型，直接放入mapper注册中心中
+     * 如果是resource、url类型，先解析mapper.xml，然后根据命名空间创建对象，放入mapper注册中心中
+     *
      * @param parent 解析好的节点<mappers></mappers>
      */
     private void mapperElement(XNode parent) throws Exception {
@@ -574,6 +599,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 判断是否是指定的环境
+     *
      * @param id
      * @return
      */

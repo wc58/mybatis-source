@@ -26,12 +26,14 @@ public interface DataSourceFactory {
 
     /**
      * 为工厂设置属性
+     *
      * @param props
      */
     void setProperties(Properties props);
 
     /**
      * 工厂所返回的数据源
+     *
      * @return
      */
     DataSource getDataSource();

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.apache.ibatis.chao.main.mapper.XmlUserMapper">
+    <cache eviction="LRU" flushInterval="60000" size="512" readOnly="true"/>
+
+    <sql id="chao">
+        SELECT * FROM tb_user WHERE id = #{id}
+    </sql>
+
+
+    <!--    <cache-ref namespace=""/>-->
+
+    <!--    <cache>-->
+    <!--    </cache>-->
+
+    <resultMap id="user" type="org.apache.ibatis.chao.main.pojo.XmlUser">
+        <id property="id" column="id" javaType="int"/>
+    </resultMap>
+
+    <select id="getUserById" parameterType="int" resultMap="user" resultOrdered="true">
+        <include refid="chao">
+            <property name="id" value="#{id}"/>
+        </include>
+    </select>
+
+    <select id="getUser" resultType="xmlUser">
+        SELECT * FROM tb_user
+    </select>
+
+    <insert id="insertUser">
+        INSERT INTO tb_user(name ,password,sex,age)
+        VALUES (#{name},#{password},#{sex},#{age})
+    </insert>
+
+    <update id="updateUser">
+        UPDATE tb_user set name = #{name} ,password = #{password},sex=#{sex},age=#{age}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteUser">
+        DELETE FROM tb_user WHERE id = #{id}
+    </delete>
+
+</mapper>

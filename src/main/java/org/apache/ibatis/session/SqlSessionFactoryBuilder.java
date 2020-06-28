@@ -59,28 +59,29 @@ public class SqlSessionFactoryBuilder {
     return build(reader, null, properties);
   }
 
-  /**
-   * 字符输入流加指定环境和属性进行创建
-   * @param reader
-   * @param environment
-   * @param properties
-   * @return
-   */
-  public SqlSessionFactory build(Reader reader, String environment, Properties properties) {
-    try {
-      XMLConfigBuilder parser = new XMLConfigBuilder(reader, environment, properties);
-      return build(parser.parse());
-    } catch (Exception e) {
-      throw ExceptionFactory.wrapException("Error building SqlSession.", e);
-    } finally {
-      ErrorContext.instance().reset();
-      try {
-        reader.close();
-      } catch (IOException e) {
-        // Intentionally ignore. Prefer previous error.
-      }
+    /**
+     * 通过字符输入流来读取配置文件
+     * 进而对主配置类的配置
+     * @param reader
+     * @param environment
+     * @param properties
+     * @return
+     */
+    public SqlSessionFactory build(Reader reader, String environment, Properties properties) {
+        try {
+            XMLConfigBuilder parser = new XMLConfigBuilder(reader, environment, properties);
+            return build(parser.parse());
+        } catch (Exception e) {
+            throw ExceptionFactory.wrapException("Error building SqlSession.", e);
+        } finally {
+            ErrorContext.instance().reset();
+            try {
+                reader.close();
+            } catch (IOException e) {
+                // Intentionally ignore. Prefer previous error.
+            }
+        }
     }
-  }
 
   /**
    * 字节输入流进行创建
@@ -111,36 +112,38 @@ public class SqlSessionFactoryBuilder {
     return build(inputStream, null, properties);
   }
 
-  /**
-   * 字符输入流加指定环境和熟悉
-   * @param inputStream
-   * @param environment
-   * @param properties
-   * @return
-   */
-  public SqlSessionFactory build(InputStream inputStream, String environment, Properties properties) {
-    try {
-      XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);
-      return build(parser.parse());
-    } catch (Exception e) {
-      throw ExceptionFactory.wrapException("Error building SqlSession.", e);
-    } finally {
-      ErrorContext.instance().reset();
-      try {
-        inputStream.close();
-      } catch (IOException e) {
-        // Intentionally ignore. Prefer previous error.
-      }
+    /**
+     * 通字节输入流来读取配置文件
+     * 进而对主配置类的配置
+     * @param inputStream
+     * @param environment
+     * @param properties
+     * @return
+     */
+    public SqlSessionFactory build(InputStream inputStream, String environment, Properties properties) {
+        try {
+            XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);
+            return build(parser.parse());
+        } catch (Exception e) {
+            throw ExceptionFactory.wrapException("Error building SqlSession.", e);
+        } finally {
+            ErrorContext.instance().reset();
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                // Intentionally ignore. Prefer previous error.
+            }
+        }
     }
-  }
 
-  /**
-   * 通过一个配置类进行配置
-   * @param config
-   * @return
-   */
-  public SqlSessionFactory build(Configuration config) {
-    return new DefaultSqlSessionFactory(config);
-  }
+
+    /**
+     * 传入解析好主配置文件，进行创建sqlSession工厂
+     * @param config
+     * @return
+     */
+    public SqlSessionFactory build(Configuration config) {
+        return new DefaultSqlSessionFactory(config);
+    }
 
 }

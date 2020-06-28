@@ -40,11 +40,27 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
 
     private static final long serialVersionUID = -8855120656740914948L;
 
+    /**
+     * 使用无参构造方法创建
+     *
+     * @param type
+     * @param <T>
+     * @return
+     */
     @Override
     public <T> T create(Class<T> type) {
         return create(type, null, null);
     }
 
+    /**
+     * 使用有参构造方法创建
+     *
+     * @param type
+     * @param constructorArgTypes
+     * @param constructorArgs
+     * @param <T>
+     * @return
+     */
     @SuppressWarnings("unchecked")
     @Override
     public <T> T create(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
@@ -55,10 +71,11 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
 
     /**
      * 首先判断是否根据参数创建实例
-     *      没有构成参数或构造参数类型，则走默认方法
-     *              如果出现异常，则跳过访问检查，直接创建对象
-     *      如果有构成参数，则根据用户提功能的构造参数类型进行查找，反射传参创建对象
-     *              如果出现异常，则跳过访问检查，反射传参创建对象
+     * 没有构成参数或构造参数类型，则走默认方法
+     * 如果出现异常，则跳过访问检查，直接创建对象
+     * 如果有构成参数，则根据用户提功能的构造参数类型进行查找，反射传参创建对象
+     * 如果出现异常，则跳过访问检查，反射传参创建对象
+     *
      * @param type
      * @param constructorArgTypes
      * @param constructorArgs
@@ -103,6 +120,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
 
     /**
      * 将部分接口转为常用的实现类
+     *
      * @param type
      * @return
      */

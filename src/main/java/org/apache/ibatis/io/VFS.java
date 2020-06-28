@@ -49,6 +49,7 @@ public abstract class VFS {
 
         /**
          * 实例化VFS
+         *
          * @return
          */
         @SuppressWarnings("unchecked")
@@ -85,6 +86,7 @@ public abstract class VFS {
 
     /**
      * 获取VFS实例（单例）
+     *
      * @return
      */
     public static VFS getInstance() {
@@ -93,6 +95,7 @@ public abstract class VFS {
 
     /**
      * 保存用户的VFS
+     *
      * @param clazz
      */
     public static void addImplClass(Class<? extends VFS> clazz) {
@@ -103,6 +106,7 @@ public abstract class VFS {
 
     /**
      * 通过全类名反射加载类
+     *
      * @param className
      * @return
      */
@@ -120,6 +124,7 @@ public abstract class VFS {
 
     /**
      * 从指定类中查找指定方法对象
+     *
      * @param clazz
      * @param methodName
      * @param parameterTypes
@@ -142,6 +147,7 @@ public abstract class VFS {
 
     /**
      * 调用指定类的指定方法
+     *
      * @param method
      * @param object
      * @param parameters
@@ -168,6 +174,7 @@ public abstract class VFS {
 
     /**
      * 将相对路径转化为url路径
+     *
      * @param path
      * @return
      * @throws IOException
@@ -178,12 +185,14 @@ public abstract class VFS {
 
     /**
      * 当前VFS是否有效
+     *
      * @return
      */
     public abstract boolean isValid();
 
     /**
      * 递归的加载出子资源
+     *
      * @param url
      * @param forPath
      * @return
@@ -193,6 +202,7 @@ public abstract class VFS {
 
     /**
      * 加载指定url下的文件
+     *
      * @param path
      * @return
      * @throws IOException

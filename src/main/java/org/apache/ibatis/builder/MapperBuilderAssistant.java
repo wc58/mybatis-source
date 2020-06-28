@@ -61,7 +61,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
     //当前缓存
     private Cache currentCache;
     //正在处理缓存？
-    private boolean unresolvedCacheRef; // issue #676
+    private boolean unresolvedCacheRef;
 
     /**
      * 设置基本属性
@@ -105,6 +105,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
     /**
      * 使用当前命名空间
      * 将命名空间和方法名拼接返回
+     *
      * @param base        方法名
      * @param isReference 是否引用
      * @return
@@ -133,7 +134,8 @@ public class MapperBuilderAssistant extends BaseBuilder {
 
     /**
      * 使用缓存
-     *  根据命名空间从主配置类中取出缓存
+     * 根据命名空间从主配置类中取出缓存
+     *
      * @param namespace
      * @return
      */
@@ -157,7 +159,8 @@ public class MapperBuilderAssistant extends BaseBuilder {
 
     /**
      * 使用新缓存
-     *  重新创建一个新的缓存，放入到主配置类中，设该缓存为当前缓存，然后返回出去
+     * 重新创建一个新的缓存，放入到主配置类中，设该缓存为当前缓存，然后返回出去
+     *
      * @param typeClass
      * @param evictionClass
      * @param flushInterval
@@ -189,9 +192,10 @@ public class MapperBuilderAssistant extends BaseBuilder {
     }
 
     /**
-     * 添加一个参数映射
-     *  为方法名设置命名空间
-     *  创建一个参数映射放入主配置类中
+     * 添加一个参数映射（目前被废弃）
+     * 为方法名设置命名空间
+     * 创建一个参数映射放入主配置类中
+     *
      * @param id
      * @param parameterClass
      * @param parameterMappings
