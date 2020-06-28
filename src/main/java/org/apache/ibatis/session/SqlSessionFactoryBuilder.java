@@ -26,24 +26,46 @@ import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.session.defaults.DefaultSqlSessionFactory;
 
 /**
- * Builds {@link SqlSession} instances.
- *
- * @author Clinton Begin
+ * 创建SqlSessionFactory
  */
 public class SqlSessionFactoryBuilder {
 
+  /**
+   * 字符输入流进行创建
+   * @param reader
+   * @return
+   */
   public SqlSessionFactory build(Reader reader) {
     return build(reader, null, null);
   }
 
+  /**
+   * 字符输入流加指定环境进行创建
+   * @param reader
+   * @param environment
+   * @return
+   */
   public SqlSessionFactory build(Reader reader, String environment) {
     return build(reader, environment, null);
   }
 
+  /**
+   * 字符输入流加指定属性进行创建
+   * @param reader
+   * @param properties
+   * @return
+   */
   public SqlSessionFactory build(Reader reader, Properties properties) {
     return build(reader, null, properties);
   }
 
+  /**
+   * 字符输入流加指定环境和属性进行创建
+   * @param reader
+   * @param environment
+   * @param properties
+   * @return
+   */
   public SqlSessionFactory build(Reader reader, String environment, Properties properties) {
     try {
       XMLConfigBuilder parser = new XMLConfigBuilder(reader, environment, properties);
@@ -60,18 +82,42 @@ public class SqlSessionFactoryBuilder {
     }
   }
 
+  /**
+   * 字节输入流进行创建
+   * @param inputStream
+   * @return
+   */
   public SqlSessionFactory build(InputStream inputStream) {
     return build(inputStream, null, null);
   }
 
+  /**
+   * 字节输入流加指定环境
+   * @param inputStream
+   * @param environment
+   * @return
+   */
   public SqlSessionFactory build(InputStream inputStream, String environment) {
     return build(inputStream, environment, null);
   }
 
+  /**
+   * 字节输入流加指定属性
+   * @param inputStream
+   * @param properties
+   * @return
+   */
   public SqlSessionFactory build(InputStream inputStream, Properties properties) {
     return build(inputStream, null, properties);
   }
 
+  /**
+   * 字符输入流加指定环境和熟悉
+   * @param inputStream
+   * @param environment
+   * @param properties
+   * @return
+   */
   public SqlSessionFactory build(InputStream inputStream, String environment, Properties properties) {
     try {
       XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);
@@ -88,6 +134,11 @@ public class SqlSessionFactoryBuilder {
     }
   }
 
+  /**
+   * 通过一个配置类进行配置
+   * @param config
+   * @return
+   */
   public SqlSessionFactory build(Configuration config) {
     return new DefaultSqlSessionFactory(config);
   }
